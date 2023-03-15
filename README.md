@@ -111,13 +111,15 @@ go test
 The following table shows the test coverage results for this project:
 
 | Package | Statements | Coverage |
-| --- | --- | --- |
-| `package1` | 100 | 90% |
-| `package2` | 200 | 85% |
-| `package3` | 300 | 95% |
-| `total` | 600 | 90% |
+| --- | --- |----------|
+| `github.com/duxweb/go-storage/v1/main.go` | 9.61,11.14 | 100%     |
+| `github.com/duxweb/go-storage/v1/main.go` | 12.15,14.8 | 100%      |
+| `github.com/duxweb/go-storage/v1/main.go` | 15.15,17.8 | 100%      |
+| `github.com/duxweb/go-storage/v1/main.go` | 18.13,20.8 | 100%      |
+| `github.com/duxweb/go-storage/v1/main.go` | 21.13,23.8 | 100%      |
+| `github.com/duxweb/go-storage/v1/main.go` | 25.2,25.15 | 100%      |
 
-The overall test coverage for this project is 90%.
+The overall test coverage for this project is 100%.
 
 ## Author
 
