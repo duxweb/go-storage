@@ -2,7 +2,7 @@ package storage
 
 import (
 	"context"
-	"github.com/duxweb/go-storage/v1/drivers"
+	"github.com/duxweb/go-storage/drivers"
 	"io"
 )
 
