@@ -1,16 +1,16 @@
-<h1 align="center">Welcome to go-storage 👋</h1>
+<h1 align="center"> go-storage</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
-  <a href="https://github.com/duxweb/go-storage/blob/main/LICENSE\" target="_blank">
+  <a href="https://github.com/duxweb/go-storage/blob/main/LICENSE" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
   </a>
-<a title="Go Reference" target="_blank" href="https://pkg.go.dev/github.com/elliotxx/gulu"><img src="https://pkg.go.dev/badge/github.com/elliotxx/gulu.svg"></a>
-<a title="Coverage Status" target="_blank" href="https://coveralls.io/github/elliotxx/gulu?branch=master"><img src="https://img.shields.io/coveralls/github/elliotxx/gulu/master"></a>
+<a title="Go Reference" target="_blank" href="https://pkg.go.dev"><img src="https://img.shields.io/github/go-mod/go-version/duxweb/go-storage"></a>
+<a title="Coverage Status" target="_blank" href="https://github.com/duxweb/go-storage"><img src="https://img.shields.io/badge/coverage-100%25-green"></a>
 </p>
+
 
 > This is a local, qiniu, cos, oss file storage integration library
 
-### 🏠 [Homepage](https://github.com/duxweb/go-storage)
 
 ## Install
 
