@@ -6,6 +6,7 @@
   </a>
 <a title="Go Reference" target="_blank" href="https://pkg.go.dev"><img src="https://img.shields.io/github/go-mod/go-version/duxweb/go-storage"></a>
 <a title="Coverage Status" target="_blank" href="https://github.com/duxweb/go-storage"><img src="https://img.shields.io/badge/coverage-100%25-green"></a>
+<a title="Coverage Status" target="_blank" href="https://github.com/duxweb/go-storage"><img src="https://img.shields.io/github/downloads/duxweb/go-storage/total"></a>
 </p>
 
 
