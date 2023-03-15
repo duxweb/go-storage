@@ -16,7 +16,7 @@
 ## Install
 
 ```sh
-go get -u https://github.com/duxweb/go-storage/v1
+go get -u github.com/duxweb/go-storage/v1
 ```
 
 ## Usage
