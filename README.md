@@ -16,13 +16,13 @@
 ## Install
 
 ```sh
-go get -u github.com/duxweb/go-storage/v1
+go get -u github.com/duxweb/go-storage
 ```
 
 ## Usage
 
 ```go
-import "github.com/duxweb/go-storage/v1"
+import "github.com/duxweb/go-storage"
 ```
 
 ## Example
@@ -113,12 +113,12 @@ The following table shows the test coverage results for this project:
 
 | Package | Statements | Coverage |
 | --- | --- |----------|
-| `github.com/duxweb/go-storage/v1/main.go` | 9.61,11.14 | 100%     |
-| `github.com/duxweb/go-storage/v1/main.go` | 12.15,14.8 | 100%      |
-| `github.com/duxweb/go-storage/v1/main.go` | 15.15,17.8 | 100%      |
-| `github.com/duxweb/go-storage/v1/main.go` | 18.13,20.8 | 100%      |
-| `github.com/duxweb/go-storage/v1/main.go` | 21.13,23.8 | 100%      |
-| `github.com/duxweb/go-storage/v1/main.go` | 25.2,25.15 | 100%      |
+| `github.com/duxweb/go-storage/main.go` | 9.61,11.14 | 100%     |
+| `github.com/duxweb/go-storage/main.go` | 12.15,14.8 | 100%      |
+| `github.com/duxweb/go-storage/main.go` | 15.15,17.8 | 100%      |
+| `github.com/duxweb/go-storage/main.go` | 18.13,20.8 | 100%      |
+| `github.com/duxweb/go-storage/main.go` | 21.13,23.8 | 100%      |
+| `github.com/duxweb/go-storage/main.go` | 25.2,25.15 | 100%      |
 
 The overall test coverage for this project is 100%.
 

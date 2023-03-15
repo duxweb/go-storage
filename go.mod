@@ -1,4 +1,4 @@
-module github.com/duxweb/go-storage/v1
+module github.com/duxweb/go-storage
 
 go 1.18
 
