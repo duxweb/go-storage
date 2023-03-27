@@ -10,7 +10,7 @@
 </p>
 
 
-> This is a local, qiniu, cos, oss file storage integration library
+> This is a local, qiniu, cos, oss, obs file storage integration library
 
 
 ## Install
@@ -60,6 +60,7 @@ The supported types are as follows:
 - qiniu
 - cos
 - oss
+- obs
 
 Please configure according to the driver type.
 

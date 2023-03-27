@@ -3,8 +3,9 @@ module github.com/duxweb/go-storage
 go 1.18
 
 require (
-	github.com/aliyun/aliyun-oss-go-sdk v2.2.6+incompatible
+	github.com/aliyun/aliyun-oss-go-sdk v2.2.7+incompatible
 	github.com/go-resty/resty/v2 v2.7.0
+	github.com/huaweicloud/huaweicloud-sdk-go-obs v3.23.3+incompatible
 	github.com/qiniu/go-sdk/v7 v7.14.0
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.41
 )

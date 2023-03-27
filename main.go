@@ -21,6 +21,9 @@ func New(Type string, config map[string]string) FileStorage {
 	case "oss":
 		driver = drivers.NewOssStorage(config["accessId"], config["accessSecret"], config["endpoint"], config["bucket"], config["domain"])
 		break
+	case "obs":
+		driver = drivers.NewObsStorage(config["ak"], config["sk"], config["endpoint"], config["bucket"], config["domain"])
+		break
 	}
 	return driver
 }

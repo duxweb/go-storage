@@ -167,3 +167,42 @@ func TestStorageQiniu(t *testing.T) {
 		t.Error("write failed:" + err.Error())
 	}
 }
+
+func TestStorageObs(t *testing.T) {
+	domain := ""
+	tLocal := New("obs", map[string]string{
+		"bucket":   "",
+		"ak":       "",
+		"sk":       "",
+		"endpoint": "",
+		"domain":   domain,
+	})
+	var err error
+	content := "test"
+
+	err = tLocal.Write(context.Background(), "test.txt", content, map[string]any{})
+	if err != nil {
+		t.Error("write failed:" + err.Error())
+	}
+
+	str, err := tLocal.Read(context.Background(), "test.txt")
+	if err != nil {
+		t.Error("read failed:" + err.Error())
+	}
+	if str != content {
+		t.Error("read failed: inconsistency of data")
+	}
+
+	publicUrl, err := tLocal.PublicUrl(context.Background(), "test.txt")
+	if err != nil {
+		t.Error("publicUrl failed:" + err.Error())
+	}
+	if domain+"/test.txt" != publicUrl {
+		t.Error("publicUrl failed: Link inconsistency")
+	}
+
+	err = tLocal.Delete(context.Background(), "test.txt")
+	if err != nil {
+		t.Error("write failed:" + err.Error())
+	}
+}
