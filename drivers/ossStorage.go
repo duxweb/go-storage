@@ -3,7 +3,8 @@ package drivers
 import (
 	"context"
 	"fmt"
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/aliyun/alibabacloud-oss-go-sdk-v2/oss"
+	"github.com/aliyun/alibabacloud-oss-go-sdk-v2/oss/credentials"
 	"io"
 	"net/url"
 	"strings"
@@ -15,11 +16,12 @@ type OssStorage struct {
 	BucketName string
 }
 
-func NewOssStorage(accessKeyId, accessKeySecret, endpoint, bucketName, domain string) *OssStorage {
-	client, err := oss.New(endpoint, accessKeyId, accessKeySecret)
-	if err != nil {
-		return nil
-	}
+func NewOssStorage(accessKeyId, accessKeySecret, endpoint, bucketName, domain, region string) *OssStorage {
+
+	provider := credentials.NewStaticCredentialsProvider(accessKeyId, accessKeySecret)
+	cfg := oss.LoadDefaultConfig().WithCredentialsProvider(provider).WithEndpoint(endpoint).WithRegion(region)
+	client := oss.NewClient(cfg)
+
 	return &OssStorage{
 		Client:     client,
 		Domain:     domain,
@@ -32,15 +34,11 @@ func (ofs *OssStorage) Write(ctx context.Context, path string, contents string, 
 }
 
 func (ofs *OssStorage) WriteStream(ctx context.Context, path string, stream io.Reader, config map[string]interface{}) error {
-	bucket, err := ofs.Client.Bucket(ofs.BucketName)
-	if err != nil {
-		return err
-	}
-	options := []oss.Option{}
-	if val, ok := config["Content-Type"]; ok {
-		options = append(options, oss.ContentType(val.(string)))
-	}
-	err = bucket.PutObject(path, stream, options...)
+	u := ofs.Client.NewUploader()
+	_, err := u.UploadFrom(ctx, &oss.PutObjectRequest{
+		Bucket: oss.Ptr(ofs.BucketName),
+		Key:    oss.Ptr(path),
+	}, stream)
 	if err != nil {
 		return err
 	}
@@ -61,23 +59,21 @@ func (ofs *OssStorage) Read(ctx context.Context, path string) (string, error) {
 }
 
 func (ofs *OssStorage) ReadStream(ctx context.Context, path string) (io.Reader, error) {
-	bucket, err := ofs.Client.Bucket(ofs.BucketName)
+	res, err := ofs.Client.GetObject(ctx, &oss.GetObjectRequest{
+		Bucket: oss.Ptr(ofs.BucketName),
+		Key:    oss.Ptr(path),
+	})
 	if err != nil {
 		return nil, err
 	}
-	body, err := bucket.GetObject(path)
-	if err != nil {
-		return nil, err
-	}
-	return body, nil
+	return res.Body, nil
 }
 
 func (ofs *OssStorage) Delete(ctx context.Context, path string) error {
-	bucket, err := ofs.Client.Bucket(ofs.BucketName)
-	if err != nil {
-		return err
-	}
-	err = bucket.DeleteObject(path)
+	_, err := ofs.Client.DeleteObject(ctx, &oss.DeleteObjectRequest{
+		Bucket: oss.Ptr(ofs.BucketName),
+		Key:    oss.Ptr(path),
+	})
 	if err != nil {
 		return err
 	}
@@ -92,13 +88,13 @@ func (ofs *OssStorage) PublicUrl(ctx context.Context, path string) (string, erro
 }
 
 func (ofs *OssStorage) PrivateUrl(ctx context.Context, path string) (string, error) {
-	bucket, err := ofs.Client.Bucket(ofs.BucketName)
+	res, err := ofs.Client.Presign(ctx, &oss.GetObjectRequest{
+		Bucket: oss.Ptr(ofs.BucketName),
+		Key:    oss.Ptr(path),
+	},
+		oss.PresignExpires(3600))
 	if err != nil {
 		return "", err
 	}
-	finalUrl, err := bucket.SignURL(path, oss.HTTPGet, 3600)
-	if err != nil {
-		return "", err
-	}
-	return finalUrl, nil
+	return res.URL, nil
 }

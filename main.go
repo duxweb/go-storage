@@ -19,7 +19,7 @@ func New(Type string, config map[string]string) FileStorage {
 		driver = drivers.NewCoStorage(config["secretId"], config["secretKey"], config["region"], config["bucket"], config["domain"])
 		break
 	case "oss":
-		driver = drivers.NewOssStorage(config["accessId"], config["accessSecret"], config["endpoint"], config["bucket"], config["domain"])
+		driver = drivers.NewOssStorage(config["accessId"], config["accessSecret"], config["endpoint"], config["bucket"], config["domain"], config["region"])
 		break
 	case "obs":
 		driver = drivers.NewObsStorage(config["ak"], config["sk"], config["endpoint"], config["bucket"], config["domain"])
