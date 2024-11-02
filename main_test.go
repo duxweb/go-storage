@@ -7,14 +7,14 @@ import (
 
 func Test(t *testing.T) {
 	domain := ""
-	s3, err := New(map[string]string{
+	s3, err := New("s3", map[string]string{
 		"region":    "",
 		"endpoint":  "",
 		"bucket":    "",
 		"accessKey": "",
 		"secretKey": "",
 		"domain":    domain,
-	})
+	}, nil)
 	if err != nil {
 		t.Error("local init failed:" + err.Error())
 	}

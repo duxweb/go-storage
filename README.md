@@ -10,9 +10,9 @@
 </p>
 
 
-> A simple repository based on the s3 protocol, supporting cos, oss, qiniu, obs, minio and other S3-compatible protocols.
+> Simple repository based on local and s3 protocols, supporting Alibaba Cloud, Tencent Cloud, Qiniuyun, Huawei Cloud, minio and other S3 compatible protocols.
 
-> 基于 s3 协议的简单存储库，支持 阿里云、腾讯云、七牛云、华为云、minio 和其他 S3 兼容协议。
+> 基于本地和 s3 协议的简单存储库，支持 阿里云、腾讯云、七牛云、华为云、minio 和其他 S3 兼容协议。
 
 ## Install 安装
 
@@ -31,7 +31,7 @@ import "github.com/duxweb/go-storage/v2"
 
 ```go
 func main() {
-    example := storage.New(map[string]string{
+    example := storage.New("s3", map[string]string{
         "region":    "cn-south-1", 
         "endpoint":  "s3.cn-south-1.qiniucs.com",
         "bucket":    "dux",
@@ -44,7 +44,7 @@ func main() {
 		// optional
 		"ssl": "true"
 		"immutable": "true"
-    })
+    }, nil)
     example.Write(context.Background(), "example.txt", "hello world!", map[string]any)
 }
 ```
@@ -61,6 +61,8 @@ func main() {
 - PrivateUrl()
 - SignPostUrl()
 - SignPutUrl()
+- Size()
+- Exists()
 
 ### Creation method 创建方法
 
@@ -68,9 +70,10 @@ New returns new storage with handlers.
 
 New返回带有处理程序的新存储。
 
-The supported types are as follows:
+Support for local and s3 compatible repositories:
 
-支持以下类型的S3兼容存储库。
+支持本地和 s3 兼容存储库：
+
 
 - qiniu 七牛云存储
 - cos 阿里云存储
@@ -80,8 +83,31 @@ The supported types are as follows:
 
 
 ```go
-// 初始化方法
-example := storage.New(map[string]string{ ... })
+// 初始化S3存储库
+example := storage.New("s3", map[string]string{
+    map[string]string{
+        "region":    "cn-south-1",
+        "endpoint":  "s3.cn-south-1.qiniucs.com",
+        "bucket":    "dux",
+        "accessKey": "",
+        "secretKey": "",
+        
+        // public url
+        "domain":    domain,
+        
+        // optional
+        "ssl": "true"
+        "immutable": "true"
+    }
+}, nil)
+
+// 初始化本地存储库
+example := storage.New("local", map[string]string{
+	"root": "./upload",
+	"domain": "storage.test/upload"
+}, func(path string) (string, error) {
+	return "Signature result"
+})
 ```
 
 ```go
@@ -110,6 +136,18 @@ example.Delete(ctx context.Context, path string) error
 ```
 
 ```go
+// 文件大小
+example.Size(ctx context.Context, path string) (int64, error)
+```
+
+
+```go
+// 文件存在
+Exists(ctx context.Context, path string) (bool, error)
+```
+
+
+```go
 // 获取公共链接
 example.PublicUrl(ctx context.Context, path string) (string, error)
 ```
@@ -131,6 +169,11 @@ example.SignPostUrl(ctx context.Context, path string) (url string, params map[st
 // 获取 PUT 上传预签名，获取后直接使用返回地址 PUT 文件
 example.PrivateUrl(ctx context.Context, path string) (string, error)
 ```
+
+## Local Description 
+Local storage instructions, local storage using the local file system, support for all methods, local url signature need to configure their own initialization of the signature function, signature verification, please verify their own.
+
+本地存储说明，本地存储使用本地文件系统，支持所有方法，本地url签名需要自行在初始化时配置签名函数，签名验证请自行进行验证。
 
 ## Run tests
 
