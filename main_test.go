@@ -1,208 +1,70 @@
 package storage
 
 import (
-	"bytes"
 	"context"
-	"io"
 	"testing"
 )
 
-func TestStorageCos(t *testing.T) {
+func Test(t *testing.T) {
 	domain := ""
-	tLocal := New("cos", map[string]string{
-		"bucket":    "",
-		"secretId":  "",
-		"secretKey": "",
+	s3, err := New(map[string]string{
 		"region":    "",
-		"domain":    domain,
-	})
-	var err error
-	content := "test"
-
-	err = tLocal.Write(context.Background(), "test.txt", content, map[string]any{})
-	if err != nil {
-		t.Error("local write failed:" + err.Error())
-	}
-
-	str, err := tLocal.Read(context.Background(), "test.txt")
-	if err != nil {
-		t.Error("local read failed:" + err.Error())
-	}
-	if str != content {
-		t.Error("local read failed: inconsistency of data")
-	}
-
-	publicUrl, err := tLocal.PublicUrl(context.Background(), "test.txt")
-	if err != nil {
-		t.Error("publicUrl failed:" + err.Error())
-	}
-	if domain+"/test.txt" != publicUrl {
-		t.Error("publicUrl failed: Link inconsistency")
-	}
-
-	err = tLocal.Delete(context.Background(), "test.txt")
-	if err != nil {
-		t.Error("local write failed:" + err.Error())
-	}
-}
-
-func TestStorageLocal(t *testing.T) {
-	domain := "http://0.0.0.0:8080/uploads"
-	tLocal := New("local", map[string]string{
-		"path":   "./tmp",
-		"domain": domain,
-	})
-	var err error
-	content := "test"
-	contentByte := []byte(content)
-
-	err = tLocal.Write(context.Background(), "test.txt", content, map[string]any{})
-	if err != nil {
-		t.Error("write failed:" + err.Error())
-	}
-
-	err = tLocal.WriteStream(context.Background(), "test.txt", bytes.NewBuffer(contentByte), map[string]any{})
-	if err != nil {
-		t.Error("write stream failed:" + err.Error())
-	}
-
-	str, err := tLocal.Read(context.Background(), "test.txt")
-	if err != nil {
-		t.Error("read failed:" + err.Error())
-	}
-	if str != content {
-		t.Error("local read failed: inconsistency of data")
-	}
-
-	reader, err := tLocal.ReadStream(context.Background(), "test.txt")
-	if err != nil {
-		t.Error("read failed:" + err.Error())
-	}
-	readerByte, err := io.ReadAll(reader)
-	if err != nil {
-		t.Error("read failed:" + err.Error())
-	}
-	if content != string(readerByte) {
-		t.Error("read failed: inconsistency of data")
-	}
-
-	publicUrl, err := tLocal.PublicUrl(context.Background(), "test.txt")
-	if err != nil {
-		t.Error("publicUrl failed:" + err.Error())
-	}
-	if domain+"/test.txt" != publicUrl {
-		t.Error("publicUrl failed: Link inconsistency")
-	}
-
-	err = tLocal.Delete(context.Background(), "test.txt")
-	if err != nil {
-		t.Error("delete failed:" + err.Error())
-	}
-}
-
-func TestStorageOss(t *testing.T) {
-	domain := ""
-	tLocal := New("oss", map[string]string{
-		"bucket":       "",
-		"accessId":     "",
-		"accessSecret": "",
-		"endpoint":     "",
-		"domain":       domain,
-	})
-	var err error
-	content := "test"
-
-	err = tLocal.Write(context.Background(), "test.txt", content, map[string]any{})
-	if err != nil {
-		t.Error("local write failed:" + err.Error())
-	}
-
-	str, err := tLocal.Read(context.Background(), "test.txt")
-	if err != nil {
-		t.Error("local read failed:" + err.Error())
-	}
-	if str != content {
-		t.Error("local read failed: inconsistency of data")
-	}
-
-	publicUrl, err := tLocal.PublicUrl(context.Background(), "test.txt")
-	if err != nil {
-		t.Error("publicUrl failed:" + err.Error())
-	}
-	if domain+"/test.txt" != publicUrl {
-		t.Error("publicUrl failed: Link inconsistency")
-	}
-
-	err = tLocal.Delete(context.Background(), "test.txt")
-	if err != nil {
-		t.Error("local write failed:" + err.Error())
-	}
-}
-
-func TestStorageQiniu(t *testing.T) {
-	tLocal := New("qiniu", map[string]string{
+		"endpoint":  "",
 		"bucket":    "",
 		"accessKey": "",
 		"secretKey": "",
-		"domain":    "",
+		"domain":    domain,
 	})
-	var err error
+	if err != nil {
+		t.Error("local init failed:" + err.Error())
+	}
+
 	content := "test"
 
-	err = tLocal.Write(context.Background(), "test.txt", content, map[string]any{})
+	err = s3.Write(context.Background(), "test/test.txt", content)
 	if err != nil {
-		t.Error("write failed:" + err.Error())
+		t.Error("local write failed:" + err.Error())
 	}
 
-	str, err := tLocal.Read(context.Background(), "test.txt")
+	str, err := s3.Read(context.Background(), "test/test.txt")
 	if err != nil {
-		t.Error("read failed:" + err.Error())
+		t.Error("local read failed:" + err.Error())
 	}
 	if str != content {
-		t.Error("read failed: inconsistency of data")
+		t.Error("local read failed: inconsistency of data")
 	}
 
-	err = tLocal.Delete(context.Background(), "test.txt")
-	if err != nil {
-		t.Error("write failed:" + err.Error())
-	}
-}
-
-func TestStorageObs(t *testing.T) {
-	domain := ""
-	tLocal := New("obs", map[string]string{
-		"bucket":   "",
-		"ak":       "",
-		"sk":       "",
-		"endpoint": "",
-		"domain":   domain,
-	})
-	var err error
-	content := "test"
-
-	err = tLocal.Write(context.Background(), "test.txt", content, map[string]any{})
-	if err != nil {
-		t.Error("write failed:" + err.Error())
-	}
-
-	str, err := tLocal.Read(context.Background(), "test.txt")
-	if err != nil {
-		t.Error("read failed:" + err.Error())
-	}
-	if str != content {
-		t.Error("read failed: inconsistency of data")
-	}
-
-	publicUrl, err := tLocal.PublicUrl(context.Background(), "test.txt")
+	publicUrl, err := s3.PublicUrl(context.Background(), "test/test.txt")
 	if err != nil {
 		t.Error("publicUrl failed:" + err.Error())
 	}
-	if domain+"/test.txt" != publicUrl {
+	t.Log("publicUrl: " + publicUrl)
+
+	if domain+"/test/test.txt" != publicUrl {
 		t.Error("publicUrl failed: Link inconsistency")
 	}
 
-	err = tLocal.Delete(context.Background(), "test.txt")
+	privateUrl, err := s3.PrivateUrl(context.Background(), "test/test.txt")
 	if err != nil {
-		t.Error("write failed:" + err.Error())
+		t.Error("privateUrl failed:" + err.Error())
+	}
+	t.Log("privateUrl: " + privateUrl)
+
+	url, params, err := s3.SignPostUrl(context.Background(), "test/test2.txt")
+	if err != nil {
+		t.Error("privateUrl failed:" + err.Error())
+	}
+	t.Log("postUrl: " + url)
+	t.Log("postParams", params)
+
+	url, err = s3.SignPutUrl(context.Background(), "test/test3.txt")
+	if err != nil {
+		t.Error("privateUrl failed:" + err.Error())
+	}
+	t.Log("putUrl: " + url)
+
+	err = s3.Delete(context.Background(), "test/test.txt")
+	if err != nil {
+		t.Error("local write failed:" + err.Error())
 	}
 }
