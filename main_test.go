@@ -6,14 +6,11 @@ import (
 )
 
 func Test(t *testing.T) {
-	domain := ""
-	s3, err := New("s3", map[string]string{
-		"region":    "",
-		"endpoint":  "",
-		"bucket":    "",
-		"accessKey": "",
-		"secretKey": "",
-		"domain":    domain,
+	domain := "http://dux.test"
+	s3, err := New("local", map[string]string{
+		"root":   ".",
+		"path":   "upload",
+		"domain": domain,
 	}, nil)
 	if err != nil {
 		t.Error("local init failed:" + err.Error())
@@ -21,12 +18,12 @@ func Test(t *testing.T) {
 
 	content := "test"
 
-	err = s3.Write(context.Background(), "test/test.txt", content)
+	err = s3.Write(context.Background(), "test.txt", content)
 	if err != nil {
 		t.Error("local write failed:" + err.Error())
 	}
 
-	str, err := s3.Read(context.Background(), "test/test.txt")
+	str, err := s3.Read(context.Background(), "test.txt")
 	if err != nil {
 		t.Error("local read failed:" + err.Error())
 	}
@@ -34,36 +31,36 @@ func Test(t *testing.T) {
 		t.Error("local read failed: inconsistency of data")
 	}
 
-	publicUrl, err := s3.PublicUrl(context.Background(), "test/test.txt")
+	publicUrl, err := s3.PublicUrl(context.Background(), "test.txt")
 	if err != nil {
 		t.Error("publicUrl failed:" + err.Error())
 	}
 	t.Log("publicUrl: " + publicUrl)
 
-	if domain+"/test/test.txt" != publicUrl {
+	if domain+"/test.txt" != publicUrl {
 		t.Error("publicUrl failed: Link inconsistency")
 	}
 
-	privateUrl, err := s3.PrivateUrl(context.Background(), "test/test.txt")
+	privateUrl, err := s3.PrivateUrl(context.Background(), "test.txt")
 	if err != nil {
 		t.Error("privateUrl failed:" + err.Error())
 	}
 	t.Log("privateUrl: " + privateUrl)
 
-	url, params, err := s3.SignPostUrl(context.Background(), "test/test2.txt")
+	url, params, err := s3.SignPostUrl(context.Background(), "test2.txt")
 	if err != nil {
 		t.Error("privateUrl failed:" + err.Error())
 	}
 	t.Log("postUrl: " + url)
 	t.Log("postParams", params)
 
-	url, err = s3.SignPutUrl(context.Background(), "test/test3.txt")
+	url, err = s3.SignPutUrl(context.Background(), "test3.txt")
 	if err != nil {
 		t.Error("privateUrl failed:" + err.Error())
 	}
 	t.Log("putUrl: " + url)
 
-	err = s3.Delete(context.Background(), "test/test.txt")
+	err = s3.Delete(context.Background(), "test.txt")
 	if err != nil {
 		t.Error("local write failed:" + err.Error())
 	}

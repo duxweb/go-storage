@@ -6,12 +6,12 @@ import (
 	"io"
 )
 
-func New(Type string, config map[string]string, sign func(path string) (string, error)) (FileStorage, error) {
+func New(Type string, config map[string]string, signs ...func(path string) (string, error)) (FileStorage, error) {
 	var driver FileStorage
 	var err error
 	switch Type {
 	case "local":
-		driver = drivers.NewLocalStorage(config["root"], config["domain"], sign)
+		driver = drivers.NewLocalStorage(config, signs...)
 		break
 	case "s3":
 		driver, err = drivers.NewS3Storage(config)

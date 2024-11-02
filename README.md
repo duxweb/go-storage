@@ -187,11 +187,11 @@ go test
 
 ## Test Coverage Report
 
-The overall test coverage for this project is 76.5%.
+coverage: 60.0% of statements
 
-该项目测试覆盖率达76.5%，因部分方法为关联方法，故未覆盖。
+该项目测试覆盖率达60%，因部分方法为关联方法，故未覆盖。
 
-coverage: 76.5% of statements
+coverage: 60% of statements
 
 ok      github.com/duxweb/go-storage/v2 0.603s
 

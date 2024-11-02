@@ -13,19 +13,25 @@ import (
 type LocalStorage struct {
 	root   string
 	domain string
+	path   string
 	sign   func(path string) (string, error)
 }
 
-func NewLocalStorage(root string, domain string, sign func(path string) (string, error)) *LocalStorage {
-	return &LocalStorage{
-		root:   root,
-		domain: domain,
-		sign:   sign,
+func NewLocalStorage(configMap map[string]string, signs ...func(path string) (string, error)) *LocalStorage {
+
+	store := &LocalStorage{
+		root:   configMap["root"],
+		domain: configMap["domain"],
+		path:   configMap["path"],
 	}
+	if len(signs) > 0 {
+		store.sign = signs[0]
+	}
+	return store
 }
 
 func (s *LocalStorage) Write(ctx context.Context, path string, contents string) error {
-	fullPath := s.root + "/" + path
+	fullPath := s.root + "/" + s.getUploadPath(path)
 	paths, _ := filepath.Split(fullPath)
 	err := os.MkdirAll(paths, 0777)
 	if err != nil {
@@ -44,7 +50,7 @@ func (s *LocalStorage) Write(ctx context.Context, path string, contents string) 
 }
 
 func (s *LocalStorage) WriteStream(ctx context.Context, path string, stream io.Reader) error {
-	fullPath := s.root + "/" + path
+	fullPath := s.root + "/" + s.getUploadPath(path)
 	paths, _ := filepath.Split(fullPath)
 	err := os.MkdirAll(paths, 0777)
 	if err != nil {
@@ -63,7 +69,7 @@ func (s *LocalStorage) WriteStream(ctx context.Context, path string, stream io.R
 }
 
 func (s *LocalStorage) Read(ctx context.Context, path string) (string, error) {
-	fullPath := s.root + "/" + path
+	fullPath := s.root + "/" + s.getUploadPath(path)
 	contents, err := os.ReadFile(fullPath)
 	if err != nil {
 		return "", err
@@ -72,7 +78,7 @@ func (s *LocalStorage) Read(ctx context.Context, path string) (string, error) {
 }
 
 func (s *LocalStorage) ReadStream(ctx context.Context, path string) (io.Reader, error) {
-	fullPath := s.root + "/" + path
+	fullPath := s.root + "/" + s.getUploadPath(path)
 	f, err := os.Open(fullPath)
 	if err != nil {
 		return nil, err
@@ -81,12 +87,12 @@ func (s *LocalStorage) ReadStream(ctx context.Context, path string) (io.Reader, 
 }
 
 func (s *LocalStorage) Delete(ctx context.Context, path string) error {
-	fullPath := s.root + "/" + path
+	fullPath := s.root + "/" + s.getUploadPath(path)
 	return os.Remove(fullPath)
 }
 
 func (s *LocalStorage) Size(ctx context.Context, path string) (int64, error) {
-	fullPath := s.root + "/" + path
+	fullPath := s.root + "/" + s.getUploadPath(path)
 	stat, err := os.Stat(fullPath)
 	if err != nil {
 		return 0, err
@@ -95,7 +101,7 @@ func (s *LocalStorage) Size(ctx context.Context, path string) (int64, error) {
 }
 
 func (s *LocalStorage) Exists(ctx context.Context, path string) (bool, error) {
-	fullPath := s.root + "/" + path
+	fullPath := s.root + "/" + s.getUploadPath(path)
 	_, err := os.Stat(fullPath)
 	if err != nil {
 		return false, err
@@ -104,26 +110,35 @@ func (s *LocalStorage) Exists(ctx context.Context, path string) (bool, error) {
 }
 
 func (s *LocalStorage) PublicUrl(ctx context.Context, path string) (string, error) {
-	srcUrl := fmt.Sprintf("%s/%s", strings.TrimRight(s.domain, "/"), path)
+	domain := strings.TrimRight(s.domain, "/")
+	if s.path != "" {
+		domain = fmt.Sprintf("%s/%s", s.domain, s.path)
+	}
+	srcUrl := fmt.Sprintf("%s/%s", domain, path)
 	srcUri, _ := url.Parse(srcUrl)
 	return srcUri.String(), nil
 }
 
 func (s *LocalStorage) PrivateUrl(ctx context.Context, path string) (string, error) {
-	return s.domain + "/" + path, nil
+	return s.PublicUrl(ctx, path)
 }
 
 func (s *LocalStorage) SignPostUrl(ctx context.Context, path string) (url string, params map[string]string, err error) {
+	url = s.getUploadPath(path)
+
 	sign, err := s.getSign(path)
 	if err != nil {
 		return url, nil, err
 	}
+
 	return url, map[string]string{
 		"sign": sign,
 	}, nil
 }
 
 func (s *LocalStorage) SignPutUrl(ctx context.Context, path string) (url string, err error) {
+	url = s.getUploadPath(path)
+
 	sign, err := s.getSign(path)
 	if err != nil {
 		return url, err
@@ -134,6 +149,13 @@ func (s *LocalStorage) SignPutUrl(ctx context.Context, path string) (url string,
 		url = url + "?sign=" + sign
 	}
 	return url, nil
+}
+
+func (s *LocalStorage) getUploadPath(path string) string {
+	if s.path != "" {
+		path = fmt.Sprintf("%s/%s", s.path, path)
+	}
+	return path
 }
 
 func (s *LocalStorage) getSign(path string) (string, error) {
