@@ -35,8 +35,8 @@ func main() {
         "region":    "cn-south-1", 
         "endpoint":  "s3.cn-south-1.qiniucs.com",
         "bucket":    "dux",
-        "accessKey": "",
-        "secretKey": "",
+        "access_key": "",
+        "secret_key": "",
 		
 		// public url
         "domain":    domain,
@@ -89,11 +89,11 @@ example := storage.New("s3", map[string]string{
         "region":    "cn-south-1",
         "endpoint":  "s3.cn-south-1.qiniucs.com",
         "bucket":    "dux",
-        "accessKey": "",
-        "secretKey": "",
+        "access_key": "",
+        "access_key": "",
         
-        // public url
-        "domain":    domain,
+        // public url 公共地址，用于生成公共URL
+        "domain":    "http://storage.test/upload",
         
         // optional
         "ssl": "true"
@@ -104,7 +104,8 @@ example := storage.New("s3", map[string]string{
 // 初始化本地存储库
 example := storage.New("local", map[string]string{
 	"root": "./upload",
-	"domain": "storage.test/upload"
+	// public url 公共地址，用于生成公共URL
+	"domain": "http://storage.test/upload"
 }, func(path string) (string, error) {
 	return "Signature result"
 })
@@ -160,15 +161,52 @@ example.PrivateUrl(ctx context.Context, path string) (string, error)
 
 
 ```go
-// 获取 POST 上传预签名，获取后使用表单参数和表单文件 POST 到 URL
+// 获取 POST 上传预签名
 example.SignPostUrl(ctx context.Context, path string) (url string, params map[string]string, err error)
 ```
 
 
 ```go
-// 获取 PUT 上传预签名，获取后直接使用返回地址 PUT 文件
-example.PrivateUrl(ctx context.Context, path string) (string, error)
+// 获取 PUT 上传预签名
+example.SignPutUrl(ctx context.Context, path string) (string, error)
 ```
+
+## Presignature Info
+
+使用 PUT 方式上传，获取签名后直接使用返回地址 PUT 文件流，示例如下：
+
+```ts
+fetch(url, {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/octet-stream'
+    },
+    body: file
+})
+```
+
+
+
+使用 POST Form 方式上传，获取签名后使用返回的 `params` 参数代入文件表单，需要注意的是文件key为 `file`，并且文件放置在最后，否则可能无法请求，七牛有 `NotSupportAnonymous` 问题，js 如下：
+
+```ts
+const formData = new FormData()
+
+Object.keys(params || {}).forEach((key) => {
+	formData.append(key, params?.[key])
+})
+formData.append('file', file)
+
+fetch(url, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'multipart/form-data'
+    },
+    body: formData
+})
+```
+
+
 
 ## Local Description 
 Local storage instructions, local storage using the local file system, support for all methods, local url signature need to configure their own initialization of the signature function, signature verification, please verify their own.

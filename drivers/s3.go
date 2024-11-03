@@ -33,8 +33,8 @@ func NewS3Storage(configMap map[string]string) (*S3Storage, error) {
 	store := S3Storage{
 		Endpoint:  configMap["endpoint"],
 		Region:    configMap["region"],
-		AccessKey: configMap["accessKey"],
-		SecretKey: configMap["secretKey"],
+		AccessKey: configMap["access_key"],
+		SecretKey: configMap["secret_key"],
 		Bucket:    configMap["bucket"],
 		Domain:    configMap["domain"],
 		SSL:       configMap["ssl"] == "true",
