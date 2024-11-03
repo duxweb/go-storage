@@ -33,8 +33,9 @@ func NewS3Storage(configMap map[string]string) (*S3Storage, error) {
 	store := S3Storage{
 		Endpoint:  configMap["endpoint"],
 		Region:    configMap["region"],
-		AccessKey: configMap["access_key"],
-		SecretKey: configMap["secret_key"],
+		AccessKey: configMap["accessKey"],
+		SecretKey: configMap["secretKey"],
+		Bucket:    configMap["bucket"],
 		Domain:    configMap["domain"],
 		SSL:       configMap["ssl"] == "true",
 		Immutable: configMap["immutable"] == "true",
@@ -206,6 +207,10 @@ func (s *S3Storage) SignPutUrl(ctx context.Context, path string) (url string, er
 		return "", err
 	}
 	return req.URL, nil
+}
+
+func (s *S3Storage) Local() bool {
+	return false
 }
 
 type staticResolver struct {

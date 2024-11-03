@@ -1,7 +1,7 @@
 mode: set
 github.com/duxweb/go-storage/v2/main.go:9.114,12.14 3 1
-github.com/duxweb/go-storage/v2/main.go:13.15,15.8 2 1
-github.com/duxweb/go-storage/v2/main.go:16.12,18.17 2 0
+github.com/duxweb/go-storage/v2/main.go:13.15,15.8 2 0
+github.com/duxweb/go-storage/v2/main.go:16.12,18.17 2 1
 github.com/duxweb/go-storage/v2/main.go:18.17,20.4 1 0
-github.com/duxweb/go-storage/v2/main.go:21.3,21.8 1 0
+github.com/duxweb/go-storage/v2/main.go:21.3,21.8 1 1
 github.com/duxweb/go-storage/v2/main.go:23.2,23.20 1 1

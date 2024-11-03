@@ -46,4 +46,6 @@ type FileStorage interface {
 	SignPostUrl(ctx context.Context, path string) (url string, params map[string]string, err error)
 	// SignPutUrl Signature PUT Upload Url
 	SignPutUrl(ctx context.Context, path string) (url string, err error)
+	// Local drive or not
+	Local() bool
 }

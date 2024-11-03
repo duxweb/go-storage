@@ -8,9 +8,17 @@ import (
 func Test(t *testing.T) {
 	domain := "http://dux.test"
 	s3, err := New("local", map[string]string{
+		// Local
 		"root":   ".",
 		"path":   "upload",
 		"domain": domain,
+
+		// S3
+		//"region":    "",
+		//"endpoint":  "",
+		//"bucket":    "",
+		//"accessKey": "",
+		//"secretKey": "",
 	}, nil)
 	if err != nil {
 		t.Error("local init failed:" + err.Error())
