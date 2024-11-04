@@ -133,22 +133,30 @@ func (s *LocalStorage) SignPostUrl(ctx context.Context, path string) (url string
 
 	return url, map[string]string{
 		"sign": sign,
+		"key":  path,
 	}, nil
 }
 
-func (s *LocalStorage) SignPutUrl(ctx context.Context, path string) (url string, err error) {
-	url = s.getUploadPath(path)
+func (s *LocalStorage) SignPutUrl(ctx context.Context, path string) (string, error) {
+	u := s.getUploadPath(path)
 
-	sign, err := s.getSign(path)
+	sign, err := s.getSign(u)
 	if err != nil {
-		return url, err
+		return "", err
 	}
-	if strings.Contains(url, "?") {
-		url = url + "&sign=" + sign
+
+	params := url.Values{}
+	params.Add("sign", sign)
+	params.Add("key", path)
+
+	q := params.Encode()
+
+	if strings.Contains(u, "?") {
+		u = u + "&sign=" + q
 	} else {
-		url = url + "?sign=" + sign
+		u = u + "?sign=" + q
 	}
-	return url, nil
+	return u, nil
 }
 
 func (s *LocalStorage) getUploadPath(path string) string {
