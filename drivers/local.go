@@ -126,13 +126,13 @@ func (s *LocalStorage) PrivateUrl(ctx context.Context, path string) (string, err
 func (s *LocalStorage) SignPostUrl(ctx context.Context, path string) (url string, params map[string]string, err error) {
 	url = s.getUploadPath(path)
 
-	sign, err := s.getSign(path)
+	sign, err := s.getSign(url)
 	if err != nil {
 		return url, nil, err
 	}
 
 	return url, map[string]string{
-		"Sign": sign,
+		"sign": sign,
 	}, nil
 }
 
