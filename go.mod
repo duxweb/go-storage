@@ -26,4 +26,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.24.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.28.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.32.3 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
+	golang.org/x/net v0.33.0 // indirect
 )

@@ -15,6 +15,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/smithy-go"
 	smithyendpoints "github.com/aws/smithy-go/endpoints"
+	"github.com/gabriel-vasile/mimetype"
 )
 
 type S3Storage struct {
@@ -82,10 +83,16 @@ func (s *S3Storage) WriteStream(ctx context.Context, path string, stream io.Read
 		Bucket: aws.String(s.Bucket),
 		Key:    aws.String(path),
 	}
+	mimeType, err := mimetype.DetectReader(stream)
+	if err != nil {
+		return err
+	}
+	input.ContentType = aws.String(mimeType.String())
+
 	if len(metadata) > 0 {
 		input.Metadata = metadata[0]
 	}
-	_, err := s.s3.PutObject(ctx, input)
+	_, err = s.s3.PutObject(ctx, input)
 	if err != nil {
 		return err
 	}
