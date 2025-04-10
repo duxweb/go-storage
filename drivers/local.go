@@ -30,7 +30,7 @@ func NewLocalStorage(configMap map[string]string, signs ...func(path string) (st
 	return store
 }
 
-func (s *LocalStorage) Write(ctx context.Context, path string, contents string, metadata ...map[string]string) error {
+func (s *LocalStorage) Write(ctx context.Context, path string, contents string, contentType ...string) error {
 	fullPath := s.Root + "/" + s.getUploadPath(path)
 	paths, _ := filepath.Split(fullPath)
 	err := os.MkdirAll(paths, 0777)
@@ -49,7 +49,7 @@ func (s *LocalStorage) Write(ctx context.Context, path string, contents string, 
 	return nil
 }
 
-func (s *LocalStorage) WriteStream(ctx context.Context, path string, stream io.Reader, metadata ...map[string]string) error {
+func (s *LocalStorage) WriteStream(ctx context.Context, path string, stream io.Reader, contentType ...string) error {
 	fullPath := s.Root + "/" + s.getUploadPath(path)
 	paths, _ := filepath.Split(fullPath)
 	err := os.MkdirAll(paths, 0777)

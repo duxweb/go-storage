@@ -15,7 +15,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/smithy-go"
 	smithyendpoints "github.com/aws/smithy-go/endpoints"
-	"github.com/gabriel-vasile/mimetype"
 )
 
 type S3Storage struct {
@@ -60,10 +59,16 @@ func NewS3Storage(configMap map[string]string) (*S3Storage, error) {
 			o.EndpointResolverV2 = &staticResolver{
 				url: getUrl(configMap),
 			}
+
+			o.RequestChecksumCalculation = aws.RequestChecksumCalculationWhenRequired
+			o.ResponseChecksumValidation = aws.ResponseChecksumValidationWhenRequired
 		})
 	} else {
 		client = s3.NewFromConfig(cfg, func(o *s3.Options) {
 			o.BaseEndpoint = aws.String(getUrl(configMap))
+
+			o.RequestChecksumCalculation = aws.RequestChecksumCalculationWhenRequired
+			o.ResponseChecksumValidation = aws.ResponseChecksumValidationWhenRequired
 		})
 	}
 
@@ -72,30 +77,28 @@ func NewS3Storage(configMap map[string]string) (*S3Storage, error) {
 	return &store, nil
 }
 
-func (s *S3Storage) Write(ctx context.Context, path string, contents string, metadata ...map[string]string) error {
+func (s *S3Storage) Write(ctx context.Context, path string, contents string, contentType ...string) error {
 	render := strings.NewReader(contents)
-	return s.WriteStream(ctx, path, render, metadata...)
+	return s.WriteStream(ctx, path, render, contentType...)
 }
 
-func (s *S3Storage) WriteStream(ctx context.Context, path string, stream io.Reader, metadata ...map[string]string) error {
+func (s *S3Storage) WriteStream(ctx context.Context, path string, stream io.Reader, contentType ...string) error {
+
 	input := &s3.PutObjectInput{
 		Body:   stream,
 		Bucket: aws.String(s.Bucket),
 		Key:    aws.String(path),
 	}
-	mimeType, err := mimetype.DetectReader(stream)
-	if err != nil {
-		return err
-	}
-	input.ContentType = aws.String(mimeType.String())
 
-	if len(metadata) > 0 {
-		input.Metadata = metadata[0]
+	if len(contentType) > 0 {
+		input.ContentType = aws.String(contentType[0])
 	}
-	_, err = s.s3.PutObject(ctx, input)
+	// 执行 S3 上传
+	_, err := s.s3.PutObject(ctx, input)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

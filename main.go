@@ -26,9 +26,9 @@ func New(Type string, config map[string]string, signs ...func(path string) (stri
 
 type FileStorage interface {
 	//Write writes content to a file
-	Write(ctx context.Context, path string, contents string, metadata ...map[string]string) error
+	Write(ctx context.Context, path string, contents string, contentType ...string) error
 	// WriteStream writes the data stream to a file
-	WriteStream(ctx context.Context, path string, stream io.Reader, metadata ...map[string]string) error
+	WriteStream(ctx context.Context, path string, stream io.Reader, contentType ...string) error
 	// Read a file to a string
 	Read(ctx context.Context, path string) (string, error)
 	// ReadStream read the file to the stream
