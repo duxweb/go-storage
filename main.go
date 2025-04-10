@@ -2,8 +2,9 @@ package storage
 
 import (
 	"context"
-	"github.com/duxweb/go-storage/v2/drivers"
 	"io"
+
+	"github.com/duxweb/go-storage/v2/drivers"
 )
 
 func New(Type string, config map[string]string, signs ...func(path string) (string, error)) (FileStorage, error) {
@@ -25,9 +26,9 @@ func New(Type string, config map[string]string, signs ...func(path string) (stri
 
 type FileStorage interface {
 	//Write writes content to a file
-	Write(ctx context.Context, path string, contents string) error
+	Write(ctx context.Context, path string, contents string, metadata ...map[string]string) error
 	// WriteStream writes the data stream to a file
-	WriteStream(ctx context.Context, path string, stream io.Reader) error
+	WriteStream(ctx context.Context, path string, stream io.Reader, metadata ...map[string]string) error
 	// Read a file to a string
 	Read(ctx context.Context, path string) (string, error)
 	// ReadStream read the file to the stream

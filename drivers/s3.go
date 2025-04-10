@@ -4,16 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"net/url"
+	"strings"
+	"time"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/smithy-go"
 	smithyendpoints "github.com/aws/smithy-go/endpoints"
-	"io"
-	"net/url"
-	"strings"
-	"time"
 )
 
 type S3Storage struct {
@@ -70,16 +71,19 @@ func NewS3Storage(configMap map[string]string) (*S3Storage, error) {
 	return &store, nil
 }
 
-func (s *S3Storage) Write(ctx context.Context, path string, contents string) error {
+func (s *S3Storage) Write(ctx context.Context, path string, contents string, metadata ...map[string]string) error {
 	render := strings.NewReader(contents)
-	return s.WriteStream(ctx, path, render)
+	return s.WriteStream(ctx, path, render, metadata...)
 }
 
-func (s *S3Storage) WriteStream(ctx context.Context, path string, stream io.Reader) error {
+func (s *S3Storage) WriteStream(ctx context.Context, path string, stream io.Reader, metadata ...map[string]string) error {
 	input := &s3.PutObjectInput{
 		Body:   stream,
 		Bucket: aws.String(s.Bucket),
 		Key:    aws.String(path),
+	}
+	if len(metadata) > 0 {
+		input.Metadata = metadata[0]
 	}
 	_, err := s.s3.PutObject(ctx, input)
 	if err != nil {
